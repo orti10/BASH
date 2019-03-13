@@ -1,0 +1,4 @@
+greeter.o: units/greeter.cpp units/greeter.hpp
+greeting1.o: \
+  /home/ortal/Desktop/Matala1cpp/greeting1.cpp \
+  /home/ortal/Desktop/Matala1cpp/units/greeter.hpp
