@@ -5,7 +5,6 @@
 arguments=$@ #if there is arguments make sure you save them
 #path=$(find "$1" -name 'Makefile*')
 path="$1"
-echo $path
 
 if [[ $path != "" ]]
 then
@@ -14,7 +13,7 @@ else
 	echo "Not found"
 fi
 cd  $path
-make
+make #creating .exe file
 #make MAIN=<path-to-cpp-file-with-main-program>.cpp
 
 #st=$(make -f Makefile* --directory="$1")
@@ -29,17 +28,9 @@ else
 fi
 
 #checking memory leak
-valgrind --leak-check=full --error-exitcode=1 ./$2 $arguments &>/dev/null
+valgrind --leak-check=full --log-file=/dev/null --error-exitcode=1  ./$2 $arguments > /dev/null
 goodval=$?
-#echo "val is $val"
-if [ $goodval -eq 0 ]
-then
-	goodval=0
-else
-	goodval=1
-fi
-
-goodval=$? #val checking if there is no memory leak
+#echo $goodval
 
 if [ $goodval -eq 0 ]
 then
@@ -47,17 +38,18 @@ then
 else
 	goodval=1
 fi
+
 #checking thread race
 valgrind --tool=helgrind --error-exitcode=1 ./$2 $arguments  &>/dev/null
 goodhel=$? #for checking the threads
-echo $2
-echo $goodhel
+
 if [ $goodhel -eq 0 ]
 then
 	goodhel=0
 else
 	goodhel=1
 fi
+
 if [ $goodmake -eq 0 ]
 then
 	make=PASS
@@ -69,6 +61,7 @@ then
 	val=PASS
 else
 	val=FAIL
+
 fi
 if [ $goodhel -eq 0 ]
 then
@@ -79,7 +72,17 @@ fi
 
 #convert the result to binary and exit the final answer
 answer=$goodmake$goodval$goodhel
-echo "compiltion"    "memory leaks"    "thread race"
-echo   "   $make  "	  "       $val     "	    "   $hal    "
-echo  "final exit :"$answer
-	exit $answer
+#echo "compiltion"    "memory leaks"    "thread race"
+#echo   "   $make  "	  "       $val   "	    "   $hal    "
+#echo  "final exit :"$answer
+if [ $answer -eq 010 ] 
+then 
+	exit 2
+elif [ $answer -eq 011 ] 
+then
+	exit 3
+elif [ $answer -eq 001 ] 
+then 
+	exit 1
+fi
+
